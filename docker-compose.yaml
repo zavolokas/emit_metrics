@@ -1,0 +1,29 @@
+version: '3'
+services:
+  grafana:
+    image: grafana/grafana:latest
+    ports:
+      - "3000:3000"
+    environment:
+      - GF_SECURITY_ADMIN_USER=admin
+      - GF_SECURITY_ADMIN_PASSWORD=secret
+      - GF_USERS_ALLOW_SIGN_UP=false
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    volumes:
+      - grafana_data:/var/lib/grafana
+  influxdb:
+    image: influxdb:latest
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb_data:/var/lib/influxdb
+  # golang-app:
+  #   build: .
+  #   depends_on:
+  #     - influxdb
+volumes:
+  grafana_data: {}
+  influxdb_data: {}
