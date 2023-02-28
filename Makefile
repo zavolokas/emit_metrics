@@ -1,2 +1,2 @@
 run:
-	go run app/main.go
+	go run cmd/main.go
