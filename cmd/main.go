@@ -5,6 +5,7 @@ import (
 	"os"
 	"os/signal"
 	"strconv"
+	"strings"
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
@@ -20,9 +21,9 @@ const (
 
 func main() {
 	// log.SetFormatter(&log.JSONFormatter{})
-	log.SetFormatter(&log.TextFormatter{})
+	log.SetFormatter(&log.TextFormatter{FullTimestamp: true})
 	log.SetOutput(os.Stdout)
-	log.SetLevel(log.DebugLevel)
+	log.SetLevel(log.InfoLevel)
 
 	err := godotenv.Load()
 	if err != nil {
@@ -60,20 +61,30 @@ func main() {
 		return
 	}
 
+	projectID := os.Getenv("NEST_PROJECT_ID")
+	authURL := strings.Replace(os.Getenv("NEST_AUTH_URL_PATTERN"), "%PROJECT_ID%", projectID, 1)
+
 	nestConfig := nestmetrics.Config{
 		ClientID:     os.Getenv("NEST_CLIENT_ID"),
 		ClientSecret: os.Getenv("NEST_CLIENT_SECRET"),
-		ProjectID:    os.Getenv("NEST_PROJECT_ID"),
+		ProjectID:    projectID,
+		AuthURL:      authURL,
+		TokenURL:     os.Getenv("NEST_TOKEN_URL"),
+		RedirectURL:  os.Getenv("NEST_REDIRECT_URL"),
+		Scopes:       strings.Split(os.Getenv("NEST_SCOPES"), ","),
+		RefreshToken: os.Getenv("NEST_REFRESH_TOKEN"),
 		EmitFreqSec:  nestFreqSec,
 	}
 
-	if err := run(ctx, nestConfig, client); err != nil {
+	nestClient := nestmetrics.NewNestClient(nestConfig, client)
+
+	if err := run(ctx, nestConfig, nestClient, client); err != nil {
 		log.WithError(err).Fatal("error running program")
 		os.Exit(exitCodeErr)
 	}
 }
 
-func run(ctx context.Context, nestConfig nestmetrics.Config, client influxdb2.Client) error {
+func run(ctx context.Context, nestConfig nestmetrics.Config, nestClient nestmetrics.I, client influxdb2.Client) error {
 	for {
 		select {
 		case <-ctx.Done():
@@ -83,7 +94,7 @@ func run(ctx context.Context, nestConfig nestmetrics.Config, client influxdb2.Cl
 			// testmetrics.WriteMetrics(client)
 			// testmetrics.WriteAnnot(client)
 
-			err := nestmetrics.EmitNestMetrics(nestConfig, client)
+			err := nestClient.EmitNestMetrics()
 			if err != nil {
 				log.WithError(err).Warn("failed to emit nest metrics", err)
 			}
