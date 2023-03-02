@@ -1,0 +1,801 @@
+{
+    "annotations": {
+      "list": [
+        {
+          "builtIn": 1,
+          "datasource": "-- Grafana --",
+          "enable": true,
+          "hide": true,
+          "iconColor": "rgba(0, 211, 255, 1)",
+          "name": "Annotations & Alerts",
+          "target": {
+            "limit": 100,
+            "matchAny": false,
+            "tags": [],
+            "type": "dashboard"
+          },
+          "type": "dashboard"
+        },
+        {
+          "enable": true,
+          "iconColor": "red",
+          "name": "Influx",
+          "target": {
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"events\" and\n    (r._field == \"text\" or\n    r._field == \"title\")\n  )",
+            "refId": "Anno"
+          }
+        }
+      ]
+    },
+    "editable": true,
+    "fiscalYearStartMonth": 0,
+    "graphTooltip": 0,
+    "id": 1,
+    "links": [],
+    "liveNow": false,
+    "panels": [
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 0
+        },
+        "id": 18,
+        "panels": [],
+        "title": "Overview",
+        "type": "row"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "mappings": [],
+            "max": 35,
+            "min": 12,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 20
+                },
+                {
+                  "color": "red",
+                  "value": 27
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 0,
+          "y": 1
+        },
+        "id": 14,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Actual Temperature",
+        "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 0,
+            "mappings": [],
+            "max": 1,
+            "min": -1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "blue",
+                  "value": -1
+                },
+                {
+                  "color": "green",
+                  "value": -0.5
+                },
+                {
+                  "color": "orange",
+                  "value": 0.5
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "mode"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "color": "dark-green",
+                          "index": 0,
+                          "text": "OFF"
+                        },
+                        "1": {
+                          "color": "orange",
+                          "index": 1,
+                          "text": "HEATING"
+                        },
+                        "-1": {
+                          "color": "blue",
+                          "index": 2,
+                          "text": "COOLING"
+                        }
+                      },
+                      "type": "value"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 3,
+          "y": 1
+        },
+        "id": 12,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"mode\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Thermostat Status",
+        "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 1,
+            "mappings": [],
+            "max": 35,
+            "min": 12,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 20
+                },
+                {
+                  "color": "red",
+                  "value": 27
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 6,
+          "y": 1
+        },
+        "id": 15,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^set$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    r._field == \"set\"\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Desired Temperature",
+        "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 1,
+            "mappings": [],
+            "max": 90,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "semi-dark-orange",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 30
+                },
+                {
+                  "color": "blue",
+                  "value": 60
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 9,
+          "y": 1
+        },
+        "id": 16,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^humid$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    r._field == \"humid\"\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Actual Humidity",
+        "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 2,
+            "mappings": [],
+            "max": 35,
+            "min": 16,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 19
+                },
+                {
+                  "color": "red",
+                  "value": 27
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "set"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "desired"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 12,
+          "y": 1
+        },
+        "id": 10,
+        "options": {
+          "displayMode": "lcd",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\" or\n    r._field == \"set\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Current Temperature",
+        "type": "bargauge"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 6
+        },
+        "id": 20,
+        "panels": [],
+        "title": "Temperature",
+        "type": "row"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "area"
+              }
+            },
+            "decimals": 3,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 20
+                },
+                {
+                  "color": "semi-dark-orange",
+                  "value": 27
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "actual"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "temp in room"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "set"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "desired temp"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 0,
+          "y": 7
+        },
+        "id": 4,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\" or r._field == \"set\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Temperature",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 14
+        },
+        "id": 22,
+        "panels": [],
+        "title": "Thermostat Mode",
+        "type": "row"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "left",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 11,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "stepBefore",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "off"
+              }
+            },
+            "decimals": 1,
+            "mappings": [],
+            "max": 1,
+            "min": -1,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "green",
+                  "value": null
+                },
+                {
+                  "color": "red",
+                  "value": 80
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "mode"
+              },
+              "properties": [
+                {
+                  "id": "mappings",
+                  "value": [
+                    {
+                      "options": {
+                        "0": {
+                          "index": 0,
+                          "text": "OFF"
+                        }
+                      },
+                      "type": "value"
+                    },
+                    {
+                      "options": {
+                        "from": -1,
+                        "result": {
+                          "index": 1,
+                          "text": "COOLING"
+                        },
+                        "to": 0
+                      },
+                      "type": "range"
+                    },
+                    {
+                      "options": {
+                        "from": 0,
+                        "result": {
+                          "index": 2,
+                          "text": "HEATING"
+                        },
+                        "to": 1
+                      },
+                      "type": "range"
+                    }
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 12,
+          "x": 0,
+          "y": 15
+        },
+        "id": 8,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "hidden",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"mode\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Mode",
+        "type": "timeseries"
+      },
+      {
+        "collapsed": false,
+        "gridPos": {
+          "h": 1,
+          "w": 24,
+          "x": 0,
+          "y": 20
+        },
+        "id": 24,
+        "panels": [],
+        "title": "Humidity",
+        "type": "row"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "area"
+              }
+            },
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "orange",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 30
+                },
+                {
+                  "color": "blue",
+                  "value": 60
+                }
+              ]
+            },
+            "unit": "humidity"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 12,
+          "x": 0,
+          "y": 21
+        },
+        "id": 6,
+        "options": {
+          "legend": {
+            "calcs": [],
+            "displayMode": "list",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"humid\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Humidity",
+        "type": "timeseries"
+      }
+    ],
+    "refresh": "1m",
+    "schemaVersion": 34,
+    "style": "dark",
+    "tags": [],
+    "templating": {
+      "list": []
+    },
+    "time": {
+      "from": "now-3h",
+      "to": "now"
+    },
+    "timepicker": {},
+    "timezone": "",
+    "title": "InfluxDB Test",
+    "uid": "Qrl8SSb4k",
+    "version": 24,
+    "weekStart": ""
+  }
