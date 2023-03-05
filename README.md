@@ -90,3 +90,15 @@ curl -X POST "https://api.telegram.org/bot${WH_TGBOT_TOKEN}/sendMessage" \
     -H 'Content-Type: application/json' \
     -d '{"chat_id":"<chat id>", "text":"Hi"}'
 ```
+
+# Open Weather
+
+```bash
+# set api key
+OW_API_KEY=... && \
+LON=... && \
+LAT=...
+
+# get weather
+curl -X GET "https://api.openweathermap.org/data/2.5/weather?lat=${LAT}&lon=${LON}&appid=${OW_API_KEY}"
+```
