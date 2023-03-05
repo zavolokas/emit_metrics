@@ -1,5 +1,19 @@
 version: '3'
 services:
+  telegraf:
+    image: telegraf
+    container_name: telegraf
+    restart: always
+    volumes:
+    - ./telegraf.conf:/etc/telegraf/telegraf.conf:ro
+    depends_on:
+      - influxdb
+    links:
+      - influxdb
+    ports:
+    - '8125:8125'
+    env_file:
+    - .env
   grafana:
     image: grafana/grafana:latest
     ports:
@@ -16,10 +30,13 @@ services:
       - grafana_data:/var/lib/grafana
   influxdb:
     image: influxdb:latest
+    restart: always
     ports:
       - "8086:8086"
     volumes:
-      - influxdb_data:/var/lib/influxdb
+    - influxdb_data:/var/lib/influxdb2
+    env_file:
+    - .env
   # golang-app:
   #   build: .
   #   depends_on:
