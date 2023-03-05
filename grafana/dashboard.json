@@ -17,11 +17,35 @@
           "type": "dashboard"
         },
         {
+          "datasource": "InfluxDB",
           "enable": true,
-          "iconColor": "red",
-          "name": "Influx",
+          "iconColor": "yellow",
+          "mappings": {
+            "text": {
+              "source": "field",
+              "value": "time when it goes up"
+            },
+            "time": {
+              "source": "field",
+              "value": "_value {_field=\"sys_sunrise\", _start=\"2023-03-03 12:19:36.846 +0000 UTC\", _stop=\"2023-03-03 13:19:36.846 +0000 UTC\", host=\"192.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather?lat=51.562804&lon=-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"}"
+            },
+            "title": {
+              "source": "field",
+              "value": "Sunrise"
+            }
+          },
+          "name": "Sunrises",
           "target": {
-            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"events\" and\n    (r._field == \"text\" or\n    r._field == \"title\")\n  )",
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop: v.timeRangeStop)\n  |> filter(fn: (r) => r[\"_measurement\"] == \"weather_test\")\n  |> filter(fn: (r) => r[\"_field\"] == \"sys_sunrise\")\n  |> aggregateWindow(every: 24h, fn: last, createEmpty: true)\n  |> last()\n  |> set(key: \"title\", value: \"sunrise\")\n  |> toInt()\n  |> map(fn: (r) => ({ r with _value: r._value * 1000 * 1000 * 1000 }))\n  |> toTime()\n  |> drop(columns: [\"host\", \"url\", \"_time\"])\n  //|> rename(columns: {sys_sunrise: \"_time\"})\n  ",
+            "refId": "Anno"
+          }
+        },
+        {
+          "enable": true,
+          "iconColor": "semi-dark-green",
+          "name": "Movements",
+          "target": {
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"motion\" and\n    r._field == \"activate\" and\n    r[\"camera\"]==\"sleep\"\n  )\n  |> set(key: \"title\", value: \"motion\")\n",
             "refId": "Anno"
           }
         }
@@ -29,7 +53,7 @@
     },
     "editable": true,
     "fiscalYearStartMonth": 0,
-    "graphTooltip": 0,
+    "graphTooltip": 2,
     "id": 1,
     "links": [],
     "liveNow": false,
@@ -46,6 +70,69 @@
         "panels": [],
         "title": "Overview",
         "type": "row"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 1,
+            "mappings": [],
+            "max": 35,
+            "min": -5,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 10
+                },
+                {
+                  "color": "red",
+                  "value": 27
+                }
+              ]
+            }
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 0,
+          "y": 1
+        },
+        "id": 27,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^main_temp \\{host=\"192\\.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather\\?lat=51.562804\\&lon=\\-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"\\}$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"weather_test\" and\n    (r._field == \"main_temp\")\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Actual Temperature Outside",
+        "type": "gauge"
       },
       {
         "fieldConfig": {
@@ -79,7 +166,7 @@
         "gridPos": {
           "h": 5,
           "w": 3,
-          "x": 0,
+          "x": 3,
           "y": 1
         },
         "id": 14,
@@ -108,6 +195,179 @@
         ],
         "title": "Actual Temperature",
         "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 1,
+            "mappings": [],
+            "max": 90,
+            "min": 0,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "semi-dark-orange",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 30
+                },
+                {
+                  "color": "blue",
+                  "value": 60
+                }
+              ]
+            },
+            "unit": "percent"
+          },
+          "overrides": []
+        },
+        "gridPos": {
+          "h": 5,
+          "w": 3,
+          "x": 6,
+          "y": 1
+        },
+        "id": 16,
+        "options": {
+          "orientation": "auto",
+          "reduceOptions": {
+            "calcs": [
+              "last"
+            ],
+            "fields": "/^humid$/",
+            "values": false
+          },
+          "showThresholdLabels": false,
+          "showThresholdMarkers": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    r._field == \"humid\"\n  )",
+            "refId": "A"
+          }
+        ],
+        "title": "Actual Humidity",
+        "type": "gauge"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "thresholds"
+            },
+            "decimals": 2,
+            "mappings": [],
+            "max": 35,
+            "min": 16,
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "#EAB839",
+                  "value": 19
+                },
+                {
+                  "color": "red",
+                  "value": 27
+                }
+              ]
+            }
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "set"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "desired"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "weather_test main_feels_like {host=\"192.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather?lat=51.562804&lon=-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"}"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "outside feels like"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "weather_test main_temp {host=\"192.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather?lat=51.562804&lon=-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"}"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "outside"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 10,
+          "w": 15,
+          "x": 9,
+          "y": 1
+        },
+        "id": 10,
+        "options": {
+          "displayMode": "lcd",
+          "orientation": "horizontal",
+          "reduceOptions": {
+            "calcs": [
+              "lastNotNull"
+            ],
+            "fields": "",
+            "values": false
+          },
+          "showUnfilled": true
+        },
+        "pluginVersion": "8.3.3",
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\" or\n    r._field == \"set\")\n  )",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "hide": false,
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"weather_test\" and\n    (r._field == \"main_temp\" or r._field==\"main_feels_like\")\n  )",
+            "refId": "B"
+          }
+        ],
+        "title": "Current Temperature",
+        "type": "bargauge"
       },
       {
         "fieldConfig": {
@@ -180,8 +440,8 @@
         "gridPos": {
           "h": 5,
           "w": 3,
-          "x": 3,
-          "y": 1
+          "x": 0,
+          "y": 6
         },
         "id": 12,
         "options": {
@@ -243,8 +503,8 @@
         "gridPos": {
           "h": 5,
           "w": 3,
-          "x": 6,
-          "y": 1
+          "x": 3,
+          "y": 6
         },
         "id": 15,
         "options": {
@@ -307,17 +567,17 @@
         "gridPos": {
           "h": 5,
           "w": 3,
-          "x": 9,
-          "y": 1
+          "x": 6,
+          "y": 6
         },
-        "id": 16,
+        "id": 28,
         "options": {
           "orientation": "auto",
           "reduceOptions": {
             "calcs": [
               "last"
             ],
-            "fields": "/^humid$/",
+            "fields": "/^main_humidity \\{host=\"192\\.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather\\?lat=51.562804\\&lon=\\-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"\\}$/",
             "values": false
           },
           "showThresholdLabels": false,
@@ -330,88 +590,12 @@
               "type": "influxdb",
               "uid": "F6K2ISb4z"
             },
-            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    r._field == \"humid\"\n  )",
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"weather_test\" and\n    (r._field == \"main_humidity\")\n  )",
             "refId": "A"
           }
         ],
-        "title": "Actual Humidity",
+        "title": "Outside Humidity",
         "type": "gauge"
-      },
-      {
-        "fieldConfig": {
-          "defaults": {
-            "color": {
-              "mode": "thresholds"
-            },
-            "decimals": 2,
-            "mappings": [],
-            "max": 35,
-            "min": 16,
-            "thresholds": {
-              "mode": "absolute",
-              "steps": [
-                {
-                  "color": "blue",
-                  "value": null
-                },
-                {
-                  "color": "#EAB839",
-                  "value": 19
-                },
-                {
-                  "color": "red",
-                  "value": 27
-                }
-              ]
-            }
-          },
-          "overrides": [
-            {
-              "matcher": {
-                "id": "byName",
-                "options": "set"
-              },
-              "properties": [
-                {
-                  "id": "displayName",
-                  "value": "desired"
-                }
-              ]
-            }
-          ]
-        },
-        "gridPos": {
-          "h": 5,
-          "w": 12,
-          "x": 12,
-          "y": 1
-        },
-        "id": 10,
-        "options": {
-          "displayMode": "lcd",
-          "orientation": "horizontal",
-          "reduceOptions": {
-            "calcs": [
-              "lastNotNull"
-            ],
-            "fields": "",
-            "values": false
-          },
-          "showUnfilled": true
-        },
-        "pluginVersion": "8.3.3",
-        "targets": [
-          {
-            "datasource": {
-              "type": "influxdb",
-              "uid": "F6K2ISb4z"
-            },
-            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\" or\n    r._field == \"set\")\n  )",
-            "refId": "A"
-          }
-        ],
-        "title": "Current Temperature",
-        "type": "bargauge"
       },
       {
         "collapsed": false,
@@ -419,7 +603,7 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 6
+          "y": 11
         },
         "id": 20,
         "panels": [],
@@ -505,6 +689,30 @@
                   "value": "desired temp"
                 }
               ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "weather_test main_temp {host=\"192.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather?lat=51.562804&lon=-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"}"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "temp outside"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "main_feels_like"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "subj temp outside"
+                }
+              ]
             }
           ]
         },
@@ -512,13 +720,18 @@
           "h": 7,
           "w": 12,
           "x": 0,
-          "y": 7
+          "y": 12
         },
-        "id": 4,
+        "id": 30,
         "options": {
           "legend": {
-            "calcs": [],
-            "displayMode": "list",
+            "calcs": [
+              "lastNotNull",
+              "min",
+              "max",
+              "mean"
+            ],
+            "displayMode": "table",
             "placement": "bottom"
           },
           "tooltip": {
@@ -533,9 +746,157 @@
             },
             "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\" or r._field == \"set\")\n  )",
             "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "hide": true,
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"weather_test\" and\n    (r._field == \"main_temp\" or r._field==\"main_feels_like\")\n  )",
+            "refId": "B"
           }
         ],
-        "title": "Temperature",
+        "title": "Room",
+        "type": "timeseries"
+      },
+      {
+        "fieldConfig": {
+          "defaults": {
+            "color": {
+              "mode": "palette-classic"
+            },
+            "custom": {
+              "axisLabel": "",
+              "axisPlacement": "auto",
+              "barAlignment": 0,
+              "drawStyle": "line",
+              "fillOpacity": 0,
+              "gradientMode": "none",
+              "hideFrom": {
+                "legend": false,
+                "tooltip": false,
+                "viz": false
+              },
+              "lineInterpolation": "linear",
+              "lineWidth": 1,
+              "pointSize": 5,
+              "scaleDistribution": {
+                "type": "linear"
+              },
+              "showPoints": "auto",
+              "spanNulls": false,
+              "stacking": {
+                "group": "A",
+                "mode": "none"
+              },
+              "thresholdsStyle": {
+                "mode": "area"
+              }
+            },
+            "decimals": 3,
+            "mappings": [],
+            "thresholds": {
+              "mode": "absolute",
+              "steps": [
+                {
+                  "color": "blue",
+                  "value": null
+                },
+                {
+                  "color": "green",
+                  "value": 20
+                },
+                {
+                  "color": "semi-dark-orange",
+                  "value": 27
+                }
+              ]
+            },
+            "unit": "short"
+          },
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "set"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "desired temp"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "main_temp"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "temp outside"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "main_feels_like"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "subj temp outside"
+                }
+              ]
+            }
+          ]
+        },
+        "gridPos": {
+          "h": 7,
+          "w": 12,
+          "x": 12,
+          "y": 12
+        },
+        "id": 29,
+        "options": {
+          "legend": {
+            "calcs": [
+              "lastNotNull",
+              "min",
+              "max",
+              "mean"
+            ],
+            "displayMode": "table",
+            "placement": "bottom"
+          },
+          "tooltip": {
+            "mode": "single"
+          }
+        },
+        "targets": [
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "hide": true,
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"actual\" or r._field == \"set\")\n  )",
+            "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "hide": false,
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"weather_test\" and\n    (r._field == \"main_temp\" or r._field==\"main_feels_like\")\n  )",
+            "refId": "B"
+          }
+        ],
+        "title": "Outside",
         "type": "timeseries"
       },
       {
@@ -544,7 +905,7 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 14
+          "y": 19
         },
         "id": 22,
         "panels": [],
@@ -654,7 +1015,7 @@
           "h": 5,
           "w": 12,
           "x": 0,
-          "y": 15
+          "y": 20
         },
         "id": 8,
         "options": {
@@ -687,7 +1048,7 @@
           "h": 1,
           "w": 24,
           "x": 0,
-          "y": 20
+          "y": 25
         },
         "id": 24,
         "panels": [],
@@ -716,7 +1077,8 @@
               "lineWidth": 1,
               "pointSize": 5,
               "scaleDistribution": {
-                "type": "linear"
+                "log": 10,
+                "type": "log"
               },
               "showPoints": "auto",
               "spanNulls": false,
@@ -748,13 +1110,38 @@
             },
             "unit": "humidity"
           },
-          "overrides": []
+          "overrides": [
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "weather_test main_humidity {host=\"192.xxx.0.xxx\", url=\"https://api.openweathermap.org/data/2.5/weather?lat=51.562804&lon=-0.092382&units=metric&appid=b5cb57b314e0ff18228f41b414bb9baa\"}"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "outside"
+                }
+              ]
+            },
+            {
+              "matcher": {
+                "id": "byName",
+                "options": "nest_thermostat humid"
+              },
+              "properties": [
+                {
+                  "id": "displayName",
+                  "value": "inside"
+                }
+              ]
+            }
+          ]
         },
         "gridPos": {
-          "h": 10,
+          "h": 9,
           "w": 12,
           "x": 0,
-          "y": 21
+          "y": 26
         },
         "id": 6,
         "options": {
@@ -775,6 +1162,15 @@
             },
             "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"nest_thermostat\" and\n    (r._field == \"humid\")\n  )",
             "refId": "A"
+          },
+          {
+            "datasource": {
+              "type": "influxdb",
+              "uid": "F6K2ISb4z"
+            },
+            "hide": false,
+            "query": "from(bucket: \"default\")\n  |> range(start: v.timeRangeStart, stop:v.timeRangeStop)\n  |> filter(fn: (r) =>\n    r._measurement == \"weather_test\" and\n    (r._field == \"main_humidity\")\n  )",
+            "refId": "B"
           }
         ],
         "title": "Humidity",
@@ -789,13 +1185,13 @@
       "list": []
     },
     "time": {
-      "from": "now-3h",
+      "from": "now-6h",
       "to": "now"
     },
     "timepicker": {},
     "timezone": "",
-    "title": "InfluxDB Test",
+    "title": "Claudia's Room",
     "uid": "Qrl8SSb4k",
-    "version": 24,
+    "version": 43,
     "weekStart": ""
   }
