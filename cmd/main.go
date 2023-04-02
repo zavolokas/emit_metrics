@@ -73,6 +73,7 @@ func main() {
 		RedirectURL:  os.Getenv("NEST_REDIRECT_URL"),
 		Scopes:       strings.Split(os.Getenv("NEST_SCOPES"), ","),
 		RefreshToken: os.Getenv("NEST_REFRESH_TOKEN"),
+		AccessToken:  os.Getenv("NEST_ACCESS_TOKEN"),
 		EmitFreqSec:  nestFreqSec,
 	}
 

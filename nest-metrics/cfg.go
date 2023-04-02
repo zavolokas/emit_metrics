@@ -9,5 +9,6 @@ type Config struct {
 	Scopes       []string
 	RedirectURL  string
 	RefreshToken string
+	AccessToken  string
 	EmitFreqSec  int
 }

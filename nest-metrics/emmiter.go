@@ -36,22 +36,27 @@ func NewNestClient(cfg Config, influxClient influxdb2.Client) I {
 		RedirectURL: cfg.RedirectURL,
 	}
 
-	// Redirect user to consent page to ask for permission
-	// for the scopes specified above.
-	url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline, oauth2.ApprovalForce)
-	fmt.Printf("Visit the URL for the auth dialog: %v\n\n Paste the AuthZ code here:\n", url)
+	// // Redirect user to consent page to ask for permission
+	// // for the scopes specified above.
+	// url := conf.AuthCodeURL("state", oauth2.AccessTypeOffline, oauth2.ApprovalForce)
+	// fmt.Printf("Visit the URL for the auth dialog: %v\n\n Paste the AuthZ code here:\n", url)
 
-	// Use the authorization code that is pushed to the redirect
-	// URL. Exchange will do the handshake to retrieve the
-	// initial access token. The HTTP Client returned by
-	// conf.Client will refresh the token as necessary.
-	var code string
-	if _, err := fmt.Scan(&code); err != nil {
-		log.Fatal(err)
-	}
-	tok, err := conf.Exchange(ctx, code)
-	if err != nil {
-		log.Fatal(err)
+	// // Use the authorization code that is pushed to the redirect
+	// // URL. Exchange will do the handshake to retrieve the
+	// // initial access token. The HTTP Client returned by
+	// // conf.Client will refresh the token as necessary.
+	// var code string
+	// if _, err := fmt.Scan(&code); err != nil {
+	// 	log.Fatal(err)
+	// }
+	// tok, err := conf.Exchange(ctx, code)
+	// if err != nil {
+	// 	log.Fatal(err)
+	// }
+	tok := &oauth2.Token{
+		AccessToken:  cfg.AccessToken,
+		RefreshToken: cfg.RefreshToken,
+		Expiry:       time.Now().Add(time.Duration(120) * time.Second),
 	}
 
 	client := conf.Client(ctx, tok)
