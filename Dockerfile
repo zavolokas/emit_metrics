@@ -1,10 +1,22 @@
-FROM docker.svc.ring.com/golang:1.19-bullseye
+FROM golang:1.20-bullseye as builder
 
-COPY . /app
-WORKDIR /app
+WORKDIR /build
+COPY go.mod .
+COPY go.sum .
+COPY . .
 
-RUN go env -w GOPROXY=direct
-RUN go get -d -v ./...
-RUN go install -v ./...
+RUN CGO_ENABLED=0 GOOS=linux GOARCH=arm64 go build -o ./emit_metrics ./cmd
 
-CMD ["emit_metrics"]
+FROM debian:bullseye
+
+RUN apt-get update && apt-get install -y ca-certificates
+
+COPY --from=builder /build/emit_metrics /emit_metrics
+
+RUN groupadd --gid 900 bot && useradd -M --shell /usr/sbin/nologin --uid 900 --gid 900 bot && \
+    openssl req -newkey rsa:2048 -nodes -keyout /server.key -x509 -days 3650 -out /server.crt -subj '/CN=server' && \
+    chown bot /server.key /server.crt && chmod 0400 /server.key /server.crt
+    
+USER bot
+
+ENTRYPOINT ["/emit_metrics"]

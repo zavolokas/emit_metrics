@@ -9,7 +9,6 @@ import (
 	"time"
 
 	influxdb2 "github.com/influxdata/influxdb-client-go/v2"
-	"github.com/joho/godotenv"
 	log "github.com/sirupsen/logrus"
 	nestmetrics "github.com/zavolokas/emit_metrics/nest-metrics"
 )
@@ -25,11 +24,11 @@ func main() {
 	log.SetOutput(os.Stdout)
 	log.SetLevel(log.InfoLevel)
 
-	err := godotenv.Load()
-	if err != nil {
-		log.WithError(err).Fatal("Error loading .env file")
-		return
-	}
+	// err := godotenv.Load()
+	// if err != nil {
+	// 	log.WithError(err).Fatal("Error loading .env file")
+	// 	return
+	// }
 
 	ctx := context.Background()
 	ctx, cancel := context.WithCancel(ctx)
