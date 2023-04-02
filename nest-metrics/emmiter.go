@@ -144,6 +144,20 @@ func getDataPoint(httpClient *http.Client, projectID string) (DataPoint, error) 
 
 	dp := DataPoint{}
 
+	// 	panic: runtime error: invalid memory address or nil pointer dereference
+	// [signal SIGSEGV: segmentation violation code=0x1 addr=0x0 pc=0x249270]
+
+	// goroutine 1 [running]:
+	// github.com/zavolokas/emit_metrics/nest-metrics.getDataPoint(0x50b140?, {0x40000ce690?, 0x40001b7c38?})
+	//         /home/zavolokas/Projects/emit_metrics/nest-metrics/emmiter.go:184 +0x8e0
+	// github.com/zavolokas/emit_metrics/nest-metrics.(*nestClient).EmitNestMetrics(0x4000191d40)
+	//         /home/zavolokas/Projects/emit_metrics/nest-metrics/emmiter.go:68 +0x70
+	// main.run({0x354578, 0x4000096280}, {{0x400009842f, 0x48}, {0x40000ce653, 0x23}, {0x40000ce690, 0x24}, {0x4000098720, 0x5c}, ...}, ...)
+	//         /home/zavolokas/Projects/emit_metrics/cmd/main.go:97 +0x74
+	// main.main()
+	//         /home/zavolokas/Projects/emit_metrics/cmd/main.go:81 +0x550
+	// exit status 2
+	// make: *** [Makefile:2: run] Error 1
 	if device.Traits["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"] != nil {
 		tmp := device.Traits["sdm.devices.traits.Temperature"]["ambientTemperatureCelsius"].(float64)
 		dp.TemperatureActual = &tmp
