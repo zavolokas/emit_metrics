@@ -40,23 +40,23 @@ from(bucket: "default")
 
 First, we need to set the project ID and the client ID and secret. To do that, run the following command:
 ```bash
-CLIENT_ID=... && \
-CLIENT_SECRET=... && \
-PROJECT_ID=...
+NEST_CLIENT_ID=... && \
+NEST_CLIENT_SECRET=... && \
+NEST_PROJECT_ID=...
 ```
 
 To get authorization code run the following command:
 ```bash
-echo "https://nestservices.google.com/partnerconnections/${PROJECT_ID}/auth?redirect_uri=https://www.google.com&access_type=offline&prompt=consent&client_id=${CLIENT_ID}&response_type=code&scope=https://www.googleapis.com/auth/sdm.service" | pbcopy
+echo "https://nestservices.google.com/partnerconnections/${NEST_PROJECT_ID}/auth?redirect_uri=https://www.google.com&access_type=offline&prompt=consent&client_id=${NEST_CLIENT_ID}&response_type=code&scope=https://www.googleapis.com/auth/sdm.service" | pbcopy
 ```
 
 Open a browser and paste the copied URL. You will be redirected to a page with an authorization code. Copy the code and run the following command to get the tokens:
 
 ```bash
 AUTHZ_CODE=... && \
-TOKENS_JSON=$(curl -L -X POST "https://www.googleapis.com/oauth2/v4/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${AUTHZ_CODE}&grant_type=authorization_code&redirect_uri=https://www.google.com") && \
-ACCESS_TOKEN=$(echo "$TOKENS_JSON" | jq -r '.access_token') && \
-REFRESH_TOKEN=$(echo "$TOKENS_JSON" | jq -r '.refresh_token')
+TOKENS_JSON=$(curl -L -X POST "https://www.googleapis.com/oauth2/v4/token?client_id=${NEST_CLIENT_ID}&client_secret=${NEST_CLIENT_SECRET}&code=${AUTHZ_CODE}&grant_type=authorization_code&redirect_uri=https://www.google.com") && \
+NEST_ACCESS_TOKEN=$(echo "$TOKENS_JSON" | jq -r '.access_token') && \
+NEST_REFRESH_TOKEN=$(echo "$TOKENS_JSON" | jq -r '.refresh_token')
 ```
 
 Now we can get the list of devices:
