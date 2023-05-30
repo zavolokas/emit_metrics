@@ -58,7 +58,7 @@ Open a browser and paste the copied URL. You will be redirected to a page with a
 
 ```bash
 AUTHZ_CODE=... && \
-TOKENS_JSON=$(curl -L -X POST "https://www.googleapis.com/oauth2/v4/token?client_id=${CLIENT_ID}&client_secret=${CLIENT_SECRET}&code=${AUTHZ_CODE}&grant_type=authorization_code&redirect_uri=https://www.google.com") && \
+TOKENS_JSON=$(curl -L -X POST "https://www.googleapis.com/oauth2/v4/token?client_id=${NEST_CLIENT_ID}&client_secret=${NEST_CLIENT_SECRET}&code=${AUTHZ_CODE}&grant_type=authorization_code&redirect_uri=https://www.google.com") && \
 ACCESS_TOKEN=$(echo "$TOKENS_JSON" | jq -r '.access_token') && \
 REFRESH_TOKEN=$(echo "$TOKENS_JSON" | jq -r '.refresh_token')
 ```
